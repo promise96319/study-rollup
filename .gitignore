@@ -1,0 +1,11 @@
+node_modules
+dist
+docs
+test
+
+.vscode
+.github
+.husky
+.yarn-lock
+.pnpm-lock.yaml
+.pnpm-debug.log
