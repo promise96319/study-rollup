@@ -22,6 +22,7 @@ import relativeId from './utils/relativeId';
 import { timeEnd, timeStart } from './utils/timers';
 import { markModuleAndImpureDependenciesAsExecuted } from './utils/traverseStaticDependencies';
 
+// 文件路径 => module 对象
 function normalizeEntryModules(
 	entryModules: readonly string[] | Record<string, string>
 ): UnresolvedModule[] {
@@ -88,6 +89,8 @@ export default class Graph {
 				watcher.removeListener('close', handleClose);
 			});
 		}
+
+		// 插件系统，提供 hooks
 		this.pluginDriver = new PluginDriver(this, options, options.plugins, this.pluginCache);
 		this.acornParser = acorn.Parser.extend(...(options.acornInjectPlugins as any));
 		this.moduleLoader = new ModuleLoader(this, this.modulesById, this.options, this.pluginDriver);
@@ -163,6 +166,7 @@ export default class Graph {
 		return foundModule.info;
 	};
 
+	// 最开始时，获取模块，建立 graph 关系
 	private async generateModuleGraph(): Promise<void> {
 		({ entryModules: this.entryModules, implicitEntryModules: this.implicitEntryModules } =
 			await this.moduleLoader.addEntryModules(normalizeEntryModules(this.options.input), true));

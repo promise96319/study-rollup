@@ -126,10 +126,12 @@ export class PluginDriver {
 	}
 
 	// chains, first non-null result stops and returns
+	// 插件按照一定的顺序执行，第一个不为 null 的结果停止，返回结果
 	hookFirst<H extends AsyncPluginHooks & FirstPluginHooks>(
 		hookName: H,
 		args: Parameters<PluginHooks[H]>,
 		replaceContext?: ReplaceContext | null,
+		// 是否跳过某个插件
 		skipped?: Set<Plugin> | null
 	): EnsurePromise<ReturnType<PluginHooks[H]>> {
 		let promise: EnsurePromise<ReturnType<PluginHooks[H]>> = Promise.resolve(undefined as any);
@@ -144,6 +146,7 @@ export class PluginDriver {
 	}
 
 	// chains synchronously, first non-null result stops and returns
+	// 同步执行，第一个不为 null 的结果停止，返回结果
 	hookFirstSync<H extends SyncPluginHooks & FirstPluginHooks>(
 		hookName: H,
 		args: Parameters<PluginHooks[H]>,
@@ -157,6 +160,7 @@ export class PluginDriver {
 	}
 
 	// parallel, ignores returns
+	// 并发执行，忽略返回值
 	hookParallel<H extends AsyncPluginHooks & ParallelPluginHooks>(
 		hookName: H,
 		args: Parameters<PluginHooks[H]>,
@@ -172,6 +176,7 @@ export class PluginDriver {
 	}
 
 	// chains, reduces returned value, handling the reduced value as the first hook argument
+	// 按顺序执行插件 hook，并将第一个参数传给 reduce 函数中。
 	hookReduceArg0<H extends AsyncPluginHooks & SequentialPluginHooks>(
 		hookName: H,
 		[arg0, ...rest]: Parameters<PluginHooks[H]>,
@@ -253,6 +258,7 @@ export class PluginDriver {
 	}
 
 	// chains, ignores returns
+	// 串行执行，忽略返回值
 	hookSeq<H extends AsyncPluginHooks & SequentialPluginHooks>(
 		hookName: H,
 		args: Parameters<PluginHooks[H]>,
@@ -286,6 +292,7 @@ export class PluginDriver {
 	 * @param permitValues If true, values can be passed instead of functions for the plugin hook.
 	 * @param hookContext When passed, the plugin context can be overridden.
 	 */
+	// 执行某个插件的某个钩子，返回钩子的结果
 	private runHook<H extends PluginValueHooks>(
 		hookName: H,
 		args: Parameters<AddonHookFunction>,
@@ -323,9 +330,12 @@ export class PluginDriver {
 					if (permitValues) return hook;
 					return throwInvalidHookError(hookName, plugin.name);
 				}
+
+				// 执行插件里的 hook
 				// eslint-disable-next-line @typescript-eslint/ban-types
 				const hookResult = (hook as Function).apply(context, args);
 
+				// 如果没有返回结果 或者 不是 promise 对象，则直接返回结果
 				if (!hookResult || !hookResult.then) {
 					// short circuit for non-thenables and non-Promises
 					return hookResult;
@@ -343,6 +353,7 @@ export class PluginDriver {
 				// doing so would subtly change the defacto async event dispatch order
 				// which at least one test and some plugins in the wild may depend on.
 				const promise = Promise.resolve(hookResult);
+				// 返回一个 promise
 				return promise.then(() => {
 					// action was fulfilled
 					resolveAction(action as [string, string, Parameters<any>]);

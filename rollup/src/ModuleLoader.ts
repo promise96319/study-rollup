@@ -81,6 +81,7 @@ export class ModuleLoader {
 			? options.treeshake.moduleSideEffects
 			: () => true;
 
+		// 并发队列
 		this.readQueue = new Queue(options.maxParallelFileReads);
 	}
 
@@ -103,6 +104,7 @@ export class ModuleLoader {
 		const firstEntryModuleIndex = this.nextEntryModuleIndex;
 		this.nextEntryModuleIndex += unresolvedEntryModules.length;
 		const newEntryModules = await this.extendLoadModulesPromise(
+			// 加载入口模块
 			Promise.all(
 				unresolvedEntryModules.map(({ id, importer }) =>
 					this.loadEntryModule(id, true, importer, null)
@@ -339,6 +341,7 @@ export class ModuleLoader {
 	// If this is a preload, then this method always waits for the dependencies of the module to be resolved.
 	// Otherwise if the module does not exist, it waits for the module and all its dependencies to be loaded.
 	// Otherwise it returns immediately.
+	// 根据 resolve 的路径，获取模块
 	private async fetchModule(
 		{ id, meta, moduleSideEffects, syntheticNamedExports }: ResolvedId,
 		importer: string | undefined,
@@ -576,12 +579,14 @@ export class ModuleLoader {
 		return resolvedId;
 	}
 
+	// 加载入口模块
 	private async loadEntryModule(
 		unresolvedId: string,
 		isEntry: boolean,
 		importer: string | undefined,
 		implicitlyLoadedBefore: string | null
 	): Promise<Module> {
+		// 找到路径
 		const resolveIdResult = await resolveId(
 			unresolvedId,
 			importer,

@@ -7,4 +7,7 @@
 - https://juejin.cn/post/6844903473700405261
 
 ## 源码
-- https://segmentfault.com/a/1190000023820306
+- https://segmentfault.com/a/
+
+## 调试
+`npm run dev --inspect`

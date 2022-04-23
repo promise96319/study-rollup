@@ -122,6 +122,7 @@ function getPluginWithTimers(plugin: any, index: number): Plugin {
 	return timedPlugin as Plugin;
 }
 
+// 记录插件 hook 执行时间
 export function initialiseTimers(inputOptions: InputOptions): void {
 	if (inputOptions.perf) {
 		timers = {};

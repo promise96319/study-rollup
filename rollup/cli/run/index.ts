@@ -9,6 +9,7 @@ import { getConfigPath } from './getConfigPath';
 import loadAndParseConfigFile from './loadConfigFile';
 import loadConfigFromCommand from './loadConfigFromCommand';
 
+// 入口
 export default async function runRollup(command: Record<string, any>): Promise<void> {
 	let inputSource;
 	if (command._.length > 0) {

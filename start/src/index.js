@@ -5,8 +5,6 @@ import user from './index.json'
 console.log('c', c);
 console.log('c', c);
 console.log('c', c);
-console.log('c', c);
-console.log('c', c);
 
 export function name() {
   console.log('a ==> ', a);

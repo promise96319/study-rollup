@@ -15,6 +15,7 @@ import loadConfigFromCommand from './loadConfigFromCommand';
 import { getResetScreen } from './resetScreen';
 import { printTimings } from './timings';
 
+// 监测文件变化
 export async function watch(command: Record<string, any>): Promise<void> {
 	process.env.ROLLUP_WATCH = 'true';
 	const isTTY = process.stderr.isTTY;
@@ -32,6 +33,7 @@ export async function watch(command: Record<string, any>): Promise<void> {
 		process.stdin.resume();
 	}
 
+	// 加载配置文件
 	async function loadConfigFromFileAndTrack(configFile: string): Promise<void> {
 		let reloadingConfig = false;
 		let aborted = false;

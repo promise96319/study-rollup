@@ -25,6 +25,7 @@ import {
 	RollupWatcher
 } from './types';
 
+// 入口开始
 export default function rollup(rawInputOptions: GenericConfigObject): Promise<RollupBuild> {
 	return rollupInternal(rawInputOptions, null);
 }
@@ -33,10 +34,13 @@ export async function rollupInternal(
 	rawInputOptions: GenericConfigObject,
 	watcher: RollupWatcher | null
 ): Promise<RollupBuild> {
+	// 整理入口配置
 	const { options: inputOptions, unsetOptions: unsetInputOptions } = await getInputOptions(
 		rawInputOptions,
 		watcher !== null
 	);
+
+	// 对插件 hook 进行包装，记录执行时间。
 	initialiseTimers(inputOptions);
 
 	const graph = new Graph(inputOptions, watcher);
@@ -51,6 +55,7 @@ export async function rollupInternal(
 	try {
 		// pluginDriver 用于触发 plugin 钩子
 		await graph.pluginDriver.hookParallel('buildStart', [inputOptions]);
+		// 开始 build
 		await graph.build();
 	} catch (err: any) {
 		const watchFiles = Object.keys(graph.watchFiles);
